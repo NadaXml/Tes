@@ -25,8 +25,12 @@ public class ssc : MonoBehaviour
 
     public ScrollRect d;
     public RectTransform ctn;
-    public RectTransform my;
-    public RectTransform dc;
+    public RectTransform myRoot;
+    public RectTransform singleCtnRoot;
+
+    public RectTransform viewPort;
+
+    public RectTransform myShow;
 
     private void Awake()
     {
@@ -35,18 +39,36 @@ public class ssc : MonoBehaviour
 
     public void OnScroll(Vector2 v2)
     {
-        float delta = 932;
-        float myY = delta;
-        float myHeight = my.rect.height;
+        //按照Content的坐标系下进行换算
+        //内部元素都按照上对其，减少局部坐标到世界坐标的转化
+        //Pivot(*,1)
+        //单个页签先对
+        float pointOffset = 0;
+        float pointHeight = myRoot.rect.height;
+        float mapAnchorY = -singleCtnRoot.anchoredPosition.y;
 
-        bool top = myY > ctn.anchoredPosition.y - myHeight * 0.5 ;
-        bool bottom = myY < ctn.anchoredPosition.y + myHeight * 0.5 + dc.rect.height;
+        Transform anchor = myRoot.transform.Find("anchor");
+        Vector3 oo = anchor.TransformPoint (anchor.localPosition);
+        oo = singleCtnRoot.InverseTransformPoint(oo);
 
-        Debug.Log(top);
-        Debug.Log(bottom);
+        pointOffset = -oo.y;
+        
+        float viewportAnchorY = ctn.anchoredPosition.y;
+        float myCtnAnchoredY = pointOffset + mapAnchorY;
 
-        int i = 3;
-        i++;
+        Debug.Log("--------------------begin");
+        Debug.Log("oo " + oo.y);
+        Debug.Log(" pointoffset " + pointOffset + " mapAnchorY " + mapAnchorY + " pointHeight  " + pointHeight + "  viewportAnchorY  " + viewportAnchorY);
+        Debug.Log("--------------------end");
+
+        //这个界面的锚点是0.5左右要加
+        float myCtnTop = myCtnAnchoredY;
+        float myCtnBottom = myCtnAnchoredY + pointHeight;
+
+        bool top = myCtnBottom > viewportAnchorY;
+        bool bottom = myCtnTop < viewportAnchorY + viewPort.rect.height;
+
+        myShow.gameObject.SetActive(top && bottom);
     }
 
     // Start is called before the first frame update
