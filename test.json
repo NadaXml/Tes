@@ -1,0 +1,20 @@
+{
+    "allClass": [
+        {
+            "className": "Dictionary`2",
+            "constructor": [
+                {
+                    "param": [
+                        "IEnumerable`1"
+                    ]
+                },
+                {
+                    "param": [
+                        "IEnumerable`1",
+                        "IEqualityComparer`1"
+                    ]
+                }
+            ]
+        }
+    ]
+}
