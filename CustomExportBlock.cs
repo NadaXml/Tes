@@ -35,7 +35,35 @@ namespace SLua
 
                 GUILayout.BeginHorizontal();
                 {
-                    if (GUILayout.Button("查看"))
+                    if (GUILayout.Button("查看函数"))
+                    {
+                        paramList.Clear();
+
+                        Type tt = Type.GetType(className);
+
+                        var r = tt;
+                        Debug.Log(r.Name);
+                        MethodInfo[] s = r.GetMethods();
+
+                        foreach (var info in s)
+                        {
+                            paramList.Add("--------------------------" + info.Name);
+                            ParameterInfo[] pInfos = info.GetParameters();
+                            if (pInfos.Length > 0)
+                            {
+                                foreach (var pInfo in pInfos)
+                                {
+                                    paramList.Add(pInfo.ParameterType.Name);
+                                }
+                            }
+                            else
+                            {
+                                paramList.Add("empty");
+                            }
+                        }
+                    }
+
+                    if (GUILayout.Button("查看构造函数"))
                     {
                         paramList.Clear();
 
@@ -89,8 +117,17 @@ namespace SLua
             public List<string> param;
         }
 
+        [System.Serializable]
+        public class BlockMethod
+        {
+            public string methodName;
+            public List<string> param;
+        }
+
         public string className;
         public List<BlockConstructor> constructor;
+        public List<BlockMethod> method;
+        public Dictionary<string, BlockMethod> methodMap;
     }
 
     [System.Serializable]
@@ -139,6 +176,18 @@ namespace SLua
             foreach ( var block in datas.allClass)
             {
                 blockMap[block.className] = block;
+                if (block.method != null )
+                {
+                    block.method.Clear();
+                }
+                else
+                {
+                    block.method = new List<CustomExportBlock.BlockMethod>();
+                }
+                foreach( CustomExportBlock.BlockMethod method in block.method )
+                {
+                    block.methodMap[method.methodName] = method;
+                }
             }
         }
 
@@ -152,6 +201,12 @@ namespace SLua
         {
             CustomExportBlock block = isValidClass(className);
             return isValidConstructor(block, cInfo);
+        }
+
+        public bool isValidMethod(string className, MethodInfo info)
+        {
+            CustomExportBlock block = isValidClass(className);
+            return isValidMethod(block, info);
         }
             
         /// <summary>
@@ -170,6 +225,50 @@ namespace SLua
             return block;
         }
 
+        public bool isValidMethod(CustomExportBlock block, MethodInfo info)
+        {
+            bool ret = true;
+            if (block == null || info == null)
+            {
+                return ret;
+            }
+            ParameterInfo[] pi = info.GetParameters();
+            CustomExportBlock.BlockMethod method;
+            if (block.methodMap.TryGetValue(info.Name, out method))
+            {
+                ret = isSameParameter(method.param, pi);
+            }
+            return ret;
+        }
+        
+        public bool isSameParameter(List<string> param, ParameterInfo[] info)
+        {
+            bool ret = true;
+
+            int fitCount = 0;
+            if (info.Length == param.Count)
+            {
+                for (int i = 0; i < info.Length; i++)
+                {
+                    if (info[i].ParameterType.Name.Equals(param[i]))
+                    {
+                        fitCount++;
+                    }
+                }
+            }
+            else
+            {
+                fitCount = -1;
+            }
+
+            if (fitCount == info.Length)
+            {
+                ret = false;
+            }
+            
+            return ret;
+        }
+
         /// <summary>
         /// 反射出来的合法构造函数
         /// </summary>
@@ -183,31 +282,16 @@ namespace SLua
             {
                 return ret;
             }
-            
+
             ParameterInfo[] pi = cInfo.GetParameters();
             foreach (CustomExportBlock.BlockConstructor construct in block.constructor)
             {
-                int fitCount = 0;
-                if (pi.Length == construct.param.Count)
+                ret = ret && isSameParameter(construct.param, pi);
+                if( !ret )
                 {
-                    for (int i = 0; i < pi.Length; i++)
-                    {
-                        if (pi[i].ParameterType.Name.Equals(construct.param[i]))
-                        {
-                            fitCount++;
-                        }
-                    }
+                    break;
                 }
-                else
-                {
-                    fitCount = -1;
-                }
-
-                if ( fitCount == pi.Length)
-                {
-                    ret = false;
-                }
-            }                
+            }
             return ret;
         }
     }
