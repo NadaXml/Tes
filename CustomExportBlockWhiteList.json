@@ -1,0 +1,91 @@
+{
+    "allClass": [
+        {
+            "className": "Dictionary`2",
+            "method": [
+
+			{
+				"methodName": "Dictionary`2",
+				"methodParams":[
+					{
+						"param": [
+							"IEnumerable`1"
+						]
+					},
+				    {
+						"param": [
+							"IEnumerable`1",
+							"IEqualityComparer`1"
+						]
+					}
+				]
+
+			},
+                {
+                    "methodName": "TryAdd",
+                    "methodParams": [
+                        {
+                            "param": [
+                                "Int32",
+                                "String"
+                            ]
+                        },
+                        {
+                            "param": [
+                                "String",
+                                "String"
+                            ]
+                        },
+                        {
+                            "param": [
+                                "String",
+                                "Object"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "methodName": "Remove",
+                    "methodParams": [
+                        {
+                            "param": [
+                                "Int32",
+                                "String&"
+                            ]
+                        },
+                        {
+                            "param": [
+                                "String",
+                                "String&"
+                            ]
+                        },
+                        {
+                            "param": [
+                                "String",
+                                "Object&"
+                            ]
+                        },
+						                        {
+                            "param": [
+                                "Int32",
+                                "String"
+                            ]
+                        },
+                        {
+                            "param": [
+                                "String",
+                                "String"
+                            ]
+                        },
+                        {
+                            "param": [
+                                "String",
+                                "Object"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
